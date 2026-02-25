@@ -49,7 +49,7 @@ class _AnimatedListDemoState extends State<AnimatedListDemo> {
               parent: animation,
               curve: const Interval(0.0, 1.0),
             ),
-            axisAlignment: 0.0,
+            alignment: Alignment.center,
             child: _buildItem(user),
           ),
         );
