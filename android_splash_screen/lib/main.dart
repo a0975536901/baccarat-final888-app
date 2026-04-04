@@ -1,116 +1,92 @@
-/*
- * Copyright (C) 2021 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
-  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import 'package:flutter/material.dart';
+import 'scanner.dart';
+import 'analyzer.dart';
+import 'learning.dart';
+import 'overlay.dart';
 
-Future<void> main() async {
-  runApp(const MyApp());
+void main() {
+  runApp(MyApp());
 }
 
-/* Main widget that contains the Flutter starter app. */
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      home: HomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
+class HomePage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageState extends State<HomePage> {
+  String result = "未開始";
+  bool running = false;
 
-  void _incrementCounter() {
+  void start() {
+    if (running) return;
+
+    running = true;
+
+    Scanner.start((data) {
+      String r = Analyzer.analyze(data);
+
+      // 紀錄學習
+      Learning.record(data, r);
+
+      setState(() {
+        result = r;
+      });
+    });
+  }
+
+  void stop() {
+    Scanner.stop();
+    running = false;
+
     setState(() {
-      _counter++;
+      result = "已停止";
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 42, bottom: 250),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: CustomAppBar(),
-              ),
-            ),
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: Text("AI百家樂分析"),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-/* A Flutter implementation of the last frame of the splashscreen animation */
-class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    Widget titleSection = Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 12, right: 4),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(36.0),
-            child: Image.asset(
-              'images/androidIcon.png',
-              width: 72.0,
-              height: 72.0,
-              fit: BoxFit.fill,
+      body: Stack(
+        children: [
+          /// 👉 主畫面
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  result,
+                  style: TextStyle(fontSize: 28),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: start,
+                  child: Text("開始掃描"),
+                ),
+                ElevatedButton(
+                  onPressed: stop,
+                  child: Text("停止"),
+                ),
+              ],
             ),
           ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 3),
-          child: Text(
-            "Super Splash Screen Demo",
-            style: TextStyle(color: Colors.black54, fontSize: 24),
-          ),
-        ),
-      ],
+
+          /// 👉 懸浮視窗（可拖動）
+          OverlayWidget(result: result),
+        ],
+      ),
     );
-    return titleSection;
   }
 }
