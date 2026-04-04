@@ -1,0 +1,13 @@
+workflows:
+  android-build:
+    name: Build APK
+    environment:
+      flutter: stable
+
+    scripts:
+      - cd flutter/samples/experimental/hello_world
+      - flutter pub get
+      - flutter build apk --release
+
+    artifacts:
+      - flutter/samples/experimental/hello_world/build/app/outputs/flutter-apk/app-release.apk
