@@ -5,9 +5,9 @@ workflows:
       flutter: stable
 
     scripts:
-      - cd flutter/samples/experimental/hello_world
+      - cd flutter/samples/experimental/android_splash_screen
       - flutter pub get
       - flutter build apk --release
 
     artifacts:
-      - flutter/samples/experimental/hello_world/build/app/outputs/flutter-apk/app-release.apk
+      - flutter/samples/experimental/android_splash_screen/build/app/outputs/flutter-apk/app-release.apk
