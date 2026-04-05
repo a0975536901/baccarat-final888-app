@@ -26,7 +26,7 @@ workflows:
 
       - name: 建立 APK
         script: |
-          flutter build apk --release
+          flutter build apk --release -t lib/main.dart
 
     artifacts:
       - android_splash_screen/build/app/outputs/flutter-apk/app-release.apk
