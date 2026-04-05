@@ -6,9 +6,11 @@ workflows:
 
     scripts:
       - cd android_splash_screen
-      - ls   # 👈 加這行幫你確認
+      - ls
+      - cd android_splash_screen
+      - ls
       - flutter pub get
       - flutter build apk --release
 
     artifacts:
-      - android_splash_screen/build/app/outputs/flutter-apk/app-release.apk
+      - android_splash_screen/android_splash_screen/build/app/outputs/flutter-apk/app-release.apk
