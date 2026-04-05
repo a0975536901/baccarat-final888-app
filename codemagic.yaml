@@ -1,0 +1,14 @@
+workflows:
+  android-apk-build:
+    name: Build APK
+    environment:
+      flutter: stable
+
+    scripts:
+      - cd android_splash_screen
+      - ls   # 👈 加這行幫你確認
+      - flutter pub get
+      - flutter build apk --release
+
+    artifacts:
+      - android_splash_screen/build/app/outputs/flutter-apk/app-release.apk
