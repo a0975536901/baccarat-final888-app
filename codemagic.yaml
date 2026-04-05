@@ -1,16 +1,32 @@
 workflows:
-  android-apk-build:
-    name: Build APK
+  flutter-android-build:
+    name: Flutter Android Build
+    max_build_duration: 60
+
     environment:
       flutter: stable
 
     scripts:
-      - cd android_splash_screen
-      - ls
-      - cd android_splash_screen
-      - ls
-      - flutter pub get
-      - flutter build apk --release
+      - name: 進入專案資料夾
+        script: |
+          cd android_splash_screen
+
+      - name: 確認檔案位置
+        script: |
+          pwd
+          ls
+
+      - name: 安裝套件
+        script: |
+          flutter pub get
+
+      - name: 清除舊編譯
+        script: |
+          flutter clean
+
+      - name: 建立 APK
+        script: |
+          flutter build apk --release
 
     artifacts:
-      - android_splash_screen/android_splash_screen/build/app/outputs/flutter-apk/app-release.apk
+      - android_splash_screen/build/app/outputs/flutter-apk/app-release.apk
