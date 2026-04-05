@@ -1,116 +1,87 @@
-/*
- * Copyright (C) 2021 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
-  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import 'package:flutter/material.dart';
+import 'dart:async';
 
-Future<void> main() async {
-  runApp(const MyApp());
+void main() {
+  runApp(MyApp());
 }
 
-/* Main widget that contains the Flutter starter app. */
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      home: HomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
+class HomePage extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HomePageState extends State<HomePage> {
+  String result = "未開始";
+  Timer? timer;
 
-  void _incrementCounter() {
+  void start() {
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
+      List<String> data = ["莊", "閒", "莊", "莊", "閒"];
+      data.shuffle();
+
+      int b = data.where((e) => e == "莊").length;
+      int p = data.where((e) => e == "閒").length;
+
+      String r;
+      if (b > p) r = "建議：莊";
+      else if (p > b) r = "建議：閒";
+      else r = "觀望";
+
+      setState(() {
+        result = r;
+      });
+    });
+  }
+
+  void stop() {
+    timer?.cancel();
     setState(() {
-      _counter++;
+      result = "已停止";
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 42, bottom: 250),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: CustomAppBar(),
+      appBar: AppBar(
+        title: Text("AI百家樂分析"),
+      ),
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(result, style: TextStyle(fontSize: 28)),
+                ElevatedButton(onPressed: start, child: Text("開始")),
+                ElevatedButton(onPressed: stop, child: Text("停止")),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 50,
+            right: 20,
+            child: Container(
+              padding: EdgeInsets.all(10),
+              color: Colors.black54,
+              child: Text(
+                result,
+                style: TextStyle(color: Colors.white),
               ),
             ),
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+          )
+        ],
       ),
     );
-  }
-}
-
-/* A Flutter implementation of the last frame of the splashscreen animation */
-class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    Widget titleSection = Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 12, right: 4),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(36.0),
-            child: Image.asset(
-              'images/androidIcon.png',
-              width: 72.0,
-              height: 72.0,
-              fit: BoxFit.fill,
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 3),
-          child: Text(
-            "Super Splash Screen Demo",
-            style: TextStyle(color: Colors.black54, fontSize: 24),
-          ),
-        ),
-      ],
-    );
-    return titleSection;
   }
 }
